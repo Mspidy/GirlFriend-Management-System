@@ -1,0 +1,347 @@
+<p-toast></p-toast>
+
+<p-table [value]="detailgirlfriend">
+    <ng-template pTemplate="header">
+        <tr>
+            <th pSortableColumn="name">name <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="age">age <p-sortIcon field="age"></p-sortIcon>
+            </th>
+            <th pSortableColumn="occupation">occupation <p-sortIcon field="occupation"></p-sortIcon>
+            </th>
+            <th pSortableColumn="hobbies">hobbies <p-sortIcon field="hobbies"></p-sortIcon>
+            </th>
+            <th pSortableColumn="sleepTime">sleepTime <p-sortIcon field="sleepTime"></p-sortIcon>
+            </th>
+            <th pSortableColumn="wakeupTime">wakeupTime <p-sortIcon field="wakeupTime"></p-sortIcon>
+            </th>
+            <th pSortableColumn="check">Fav.<p-sortIcon field="check"></p-sortIcon>
+            </th>
+            <th pSortableColumn="knownLanguages">knownLanguages <p-sortIcon field="knownLanguages"></p-sortIcon>
+            </th>
+            <th>AddGift</th>
+            <th>ViewGift</th>
+            <th>Contact</th>
+            <th style="width:12em"></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-contact let-index="rowIndex">
+        <tr>
+            <td>{{contact.name}}</td>
+            <td>{{contact.age}}</td>
+            <td>{{contact.occupation}}</td>
+            <td>{{contact.hobbies}}</td>
+            <td>{{contact.sleepTime | date:"shortTime"}}</td>
+            <td>{{contact.wakeupTime | date:"shortTime"}}</td>
+            <td>
+                <p-tableCheckbox [value]="contact"></p-tableCheckbox>
+            </td>
+            <td>{{contact.knownLanguages}}</td>
+            <td>
+                <button pButton icon="pi pi-star" (click)="newPopUpGiftAdding(index)"></button>
+            </td>
+            <td>
+                <button pButton icon="pi pi-eye" (click)="shownPopUpGift(contact.gifts)"></button>
+            </td>
+            <td>
+                <button pButton icon="pi pi-eye" (click)="newPopUpContact(contact)"></button>
+            </td>
+            <td>
+                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editGirlFriend(contact, index)"></button>
+                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteGirlFriend(contact)"></button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+<!--Delete dialog-->
+<p-dialog header="Recover_gift_given_to_girlFriend" [(visible)]="displayRecoverGift">
+    <p-table [value]="showGift">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Add Gift</th>
+                <th>Price</th>
+                <th>Recover Gift</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-item let-index="rowIndex">
+            <tr>
+                <td>{{item.add_gift}}</td>
+                <td>{{item.add_price}}</td>
+                <td>
+                    <div class="p-field-checkbox">
+                        <p-checkbox [(ngModel)]="item.isRecover" [binary]="true" inputId="binary"></p-checkbox>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="nowDelete()"></button>
+</p-dialog>
+
+<p-dialog header="view Gift" [(visible)]="displayContactShownGift" [style]="{width:'40%'}">
+    <p-table [value]="showGift">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Add Gift</th>
+                <th>Price</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+                <td>{{item.add_gift}}</td>
+                <td>{{item.add_price}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
+
+<p-dialog header="GirlGift" [(visible)]="displayContactModelGift" [style]="{width:'40%'}">
+    <form [formGroup]="giftForm">
+        <div class="p-fluid p-grid">
+            <div class="p-field p-col-12 p-md-4">
+                <span class="p-float-label">
+                    <input pInputText name="add_gift" formControlName="add_gift" type="text">
+                    <label for="inputtext">Add Gift *</label>
+
+                </span>
+            </div>
+        </div>
+        <div class="p-fluid p-grid">
+            <div class="p-field p-col-12 p-md-4">
+                <span class="p-float-label">
+                    <input pInputText name="add_price" formControlName="add_price" type="text">
+                    <label for="inputtext">Gift Price *</label>
+                </span>
+            </div>
+        </div>
+    </form>
+    <p-button label="Gift Added" (onClick)="loginGift()"></p-button>
+</p-dialog>
+
+<p-dialog header="GirlContact" [(visible)]="displayContactModel" [style]="{width: '30%'}">
+    <ul *ngFor="let item of cont">
+        <li>
+            <p>Calling Number:- {{item.calling_number}}</p>
+        </li>
+        <li>
+            <p>whatsApp Number:- {{item.whatsApp_number}}</p>
+        </li>
+        <li>
+            <p>Instagram Id:- {{item.instagramId}}</p>
+        </li>
+        <li>
+            <p>facebookId:- {{item.facebookId}}</p>
+        </li>
+    </ul>
+</p-dialog>
+
+<p-dialog header="Contact Details" [(visible)]="displayModal" [style]="{ width: '50%' }">
+    <form [formGroup]="loginForm" (ngSubmit)="loginUser()">
+
+        <ng-container>
+            <div class="p-fluid p-grid">
+                <div class="p-field p-col-12 p-md-4">
+                    <span class="p-float-label">
+                        <input pInputText name="name" formControlName="name" type="text" id="inputtext">
+                        <label for="inputtext">Name *</label>
+                        <span style="color: red;" *ngIf="name && name.invalid && name.touched">name is required</span>
+                    </span>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid">
+                <div class="p-field p-col-12 p-md-4">
+                    <span class="p-float-label">
+                        <input pInputText name="age" formControlName="age" type="number" id="inputnumber">
+                        <label for="inputnumber">Age *</label>
+                        <span style="color: red;" *ngIf="age && age.invalid && age.touched">age is required</span>
+                    </span>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid">
+                <div class="p-field p-col-12 p-md-4">
+                    <span class="p-float-label">
+                        <input pInputText name="occupation" formControlName="occupation" type="text" id="inputtext">
+                        <label for="inputtext">Occupation *</label>
+                        <span style="color: red;"
+                            *ngIf="occupation && occupation.invalid && occupation.touched">occupation is required</span>
+                    </span>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid" formArrayName="hobbies">
+                <div class="p-field p-col-6">
+                    <div class="p-mb-4" *ngFor="let hobby of hobbies.controls; index as i">
+                        <span class="p-float-label">
+                            <input formControlName="{{i}}" type="text" id="hobbies" required pInputText />
+                            <label for="hobbies">Hobbies</label>
+                        </span>
+                        <span style="color: red;" *ngIf="loginForm.value.hobbies[i]===null && hobbies && hobbies.invalid && hobbies.touched">Hobbies is Requried</span>
+                    </div>
+                </div>
+                <div class="p-col-6">
+                    <p-button (onClick)="addHobby()" label="More Hobbies"></p-button>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid">
+                <div class="p-field p-col-12 p-md-4">
+                    <span class="p-float-label">
+                        <p-calendar name="sleepTime" [(ngModel)]="date1" [timeOnly]="true" inputId="timeonly"
+                            formControlName="sleepTime"></p-calendar>
+                        <label for="inputnumber">SleepTime *</label>
+                        <span style="color: red;" *ngIf="sleepTime && sleepTime.invalid && sleepTime.touched">sleepTime
+                            is required</span>
+                    </span>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid">
+                <div class="p-field p-col-12 p-md-4">
+                    <span class="p-float-label">
+                        <p-calendar name="wakeupTime" [(ngModel)]="date2" [timeOnly]="true" inputId="timeonly"
+                            formControlName="wakeupTime"></p-calendar>
+                        <label for="inputnumber">WakeupTime *</label>
+                        <span style="color: red;"
+                            *ngIf="wakeupTime && wakeupTime.invalid && wakeupTime.touched">wakeupTime is required</span>
+                    </span>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid" formArrayName="knownLanguages">
+                <div class="p-field p-col-6">
+                    <div class="p-mb-4" *ngFor="let language of knownLanguages.controls; index as i">
+                        <span class="p-float-label">
+                            <input formControlName="{{i}}" type="text" id="Languages" required pInputText />
+                            <label for="languages">knownLanguages</label>
+                        </span>
+                        <span
+                            *ngIf="loginForm.value.knownLanguages[i]===null && knownLanguages && knownLanguages.invalid && knownLanguages.touched">knownLanguages is Requried</span>
+                    </div>
+                </div>
+                <div class="p-col-6">
+                    <p-button (onClick)="addLanguages()" label="More Languages"></p-button>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid">
+                <div class="p-field p-col-12 p-md-4">
+                    <span class="p-float-label">
+                        <input pInputText name="calling_number" formControlName="calling_number" type="number"
+                            id="inputtext">
+                        <label for="inputtext">calling_number</label>
+                        <span style="color: red;"
+                            *ngIf="calling_number && calling_number.invalid && calling_number.touched">calling_number is required</span>
+                    </span>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid">
+                <div class="p-field p-col-12 p-md-4">
+                    <span class="p-float-label">
+                        <input pInputText name="whatsApp_number" formControlName="whatsApp_number" type="number"
+                            id="inputtext">
+                        <label for="inputtext">whatsApp_number</label>
+                        <span style="color: red;"
+                            *ngIf="whatsApp_number && whatsApp_number.invalid && whatsApp_number.touched">whatsApp_number is required</span>
+                    </span>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid">
+                <div class="p-field p-col-12 p-md-4">
+                    <span class="p-float-label">
+                        <input pInputText name="instagramId" formControlName="instagramId" type="text" id="inputtext">
+                        <label for="inputtext">instagramId</label>
+                    </span>
+                </div>
+            </div>
+            &nbsp;
+            <div class="p-fluid p-grid">
+                <div class="p-field p-col-12 p-md-4">
+                    <span class="p-float-label">
+                        <input pInputText name="facebookId" formControlName="facebookId" type="text" id="inputtext">
+                        <label for="inputtext">facebookId</label>
+                    </span>
+                </div>
+            </div>
+
+            <div class="p-field p-col-2">
+                <span class="p-buttonset">
+                    <button pButton pRipple [disabled]="loginForm.invalid" label="Save" icon="pi pi-check"></button>
+                </span>
+            </div>
+
+        </ng-container>
+    </form>
+</p-dialog>
+
+<!--New Data store in table-->
+<div class="card">
+    <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-4"
+                (click)="openNew()"></button>
+        </ng-template>
+    </p-toolbar>
+</div>
+
+
+<div *ngIf="deletedGirlFriend.length>0">
+    <div class="card">
+        <p-toolbar styleClass="p-mb-2">
+            <ng-template pTemplate="left">
+                <h3>BreakUp Table</h3>
+            </ng-template>
+        </p-toolbar>
+    </div>
+    <p-table [value]="deletedGirlFriend">
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="name">name <p-sortIcon field="age"></p-sortIcon>
+                </th>
+                <th pSortableColumn="age">age <p-sortIcon field="age"></p-sortIcon>
+                </th>
+                <th pSortableColumn="occupation">occupation <p-sortIcon field="occupation"></p-sortIcon>
+                </th>
+                <th pSortableColumn="hobbies">hobbies <p-sortIcon field="hobbies"></p-sortIcon>
+                </th>
+                <th pSortableColumn="sleepTime">sleepTime <p-sortIcon field="sleepTime"></p-sortIcon>
+                </th>
+                <th pSortableColumn="wakeupTime">wakeupTime <p-sortIcon field="wakeupTime"></p-sortIcon>
+                </th>
+                <th pSortableColumn="check">Fav.<p-sortIcon field="check"></p-sortIcon>
+                </th>
+                <th pSortableColumn="knownLanguages">knownLanguages <p-sortIcon field="knownLanguages"></p-sortIcon>
+                </th>
+                <th>Contact</th>
+                <th>PatchUp</th>
+                <th style="width:12em"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-contact let-indexx="rowIndex">
+            <tr [ngClass]="getCssClass(contact)">
+
+                <td>{{contact.name}}</td>
+                <td>{{contact.age}}</td>
+                <td>{{contact.occupation}}</td>
+                <td>{{contact.hobbies}}</td>
+                <td>{{contact.sleepTime | date:"shortTime"}}</td>
+                <td>{{contact.wakeupTime | date:"shortTime"}}</td>
+                <td>
+                    <p-tableCheckbox [value]="contact"></p-tableCheckbox>
+                </td>
+                <td>{{contact.knownLanguages}}</td>
+                <td>
+                    <button pButton icon="pi pi-eye" (click)="newPopUpContact(contact)"></button>
+                </td>
+                <td>
+                    <p-button label="PatchUp" (onClick)="patchUp(contact,indexx)"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

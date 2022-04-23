@@ -1,0 +1,19 @@
+.p-button-danger{
+    margin-left: 10px;
+}
+
+.error {
+    color: red;
+}
+.c3{
+    background-color: red !important;
+    color: aquamarine !important;
+}
+.c2{
+    background-color: yellow !important;
+    color: aliceblue !important;
+}
+.c1{
+    background-color: green !important;
+    color: aliceblue !important;
+}
